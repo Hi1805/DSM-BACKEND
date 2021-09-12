@@ -1,0 +1,36 @@
+{
+  "name": "send-email-express",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.ts",
+  "scripts": {
+    "start:dev": "nodemon",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/john1805/send-email-express.git"
+  },
+  "keywords": [
+    "send-email"
+  ],
+  "author": "john",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/john1805/send-email-express/issues"
+  },
+  "homepage": "https://github.com/john1805/send-email-express#readme",
+  "dependencies": {
+    "@types/express": "^4.17.13",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "googleapis": "^85.0.0",
+    "nodemailer": "^6.6.3",
+    "nodemon": "2.0.7",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/nodemailer": "^6.4.4"
+  }
+}
