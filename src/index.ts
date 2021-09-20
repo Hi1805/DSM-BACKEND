@@ -8,6 +8,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 const port = process.env.PORT || '4000';
+console.log('Run nodemon');
 
 app.get('/:email', sendEmailController);
 app.listen(port, () => {
