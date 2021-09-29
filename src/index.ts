@@ -10,6 +10,10 @@ app.use(express.urlencoded({ extended: false }));
 const port = process.env.PORT || "4000";
 
 app.post("/send", sendEmailController);
+app.get("/", (req: express.Request, res: express.Response) => {
+  return res.status(200).send("Hello World");
+});
+
 app.listen(port, () => {
   console.log(`server listen port http://localhost:${port}`);
 });
