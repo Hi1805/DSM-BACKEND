@@ -1,33 +1,56 @@
-import * as nodemailer from 'nodemailer';
-import { Request, Response } from 'express';
+import * as nodemailer from "nodemailer";
+import { Request, Response } from "express";
+import { toString } from "lodash";
+const { google } = require("googleapis");
+interface bodyRequest {
+  email: string;
+  subject: string;
+  content: string;
+  files: string[];
+}
 
 async function sendEmailController(req: Request, res: Response) {
   try {
-    const { email } = req.params;
-
+    const { email, subject, content, files }: bodyRequest = req.body;
+    console.log(email, subject, content);
+    const oAuth2Client = new google.auth.OAuth2(
+      process.env.CLIENT_ID,
+      process.env.CLIENT_SECRET,
+      process.env.REDIRECT_URI
+    );
+    oAuth2Client.setCredentials({ refresh_token: process.env.REFRESH_TOKEN });
+    const accessToken = await oAuth2Client.getAccessToken();
     // create reusable transporter object using the default SMTP transport
     let transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       port: 587,
       secure: false, // true for 465, false for other ports
       auth: {
-        user: process.env.USER|| "", // generated ethereal user
-        pass: process.env.PASS || "", // generated ethereal password
+        type: "OAuth2",
+        user: "smartattendance01pro@gmail.com",
+        clientId: process.env.CLIENT_ID,
+        clientSecret: process.env.CLIENT_SECRET,
+        refreshToken: process.env.REFRESH_TOKEN,
+        accessToken: accessToken,
       },
-      logger:true
+      logger: true,
     });
-    const emails = ["ripker1805@gmail.com"];
     // send mail with defined transport object
-    let info = await transporter.sendMail({
-      from: '"OFA 👻" <foo@example.com>', // sender address
-      to: emails.join(","), // list of receivers
-      subject: "Hello ✔", // Subject line
-      text: "Hello world?", // plain text body
-      html: "<b>Hello world?</b>", // html body
-    });
-    return res.status(200).send(info.response)
+    return await transporter
+      .sendMail({
+        from: '"OFA 👻" <OFA@gmail.com>', // sender address
+        to: toString(email), // list of receivers
+        subject: subject, // Subject line
+        text: `<div>${content}</div>`, // plain text body
+        html: `<div>${content}</div>`, // html body
+      })
+      .then(() => {
+        return res.status(200).send(`Sent email ${email} successfully`);
+      })
+      .catch(() => {
+        return res.status(500).send(`Sent email ${email} went wrong`);
+      });
   } catch (error) {
-    console.log(error);
     return res.status(500).send(error);
   }
 }
