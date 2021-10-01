@@ -1,5 +1,5 @@
 {
-  "name": "send-email-express",
+  "name": "data-school-managment",
   "version": "1.0.0",
   "description": "",
   "main": "src/index.ts",
@@ -12,7 +12,7 @@
     "url": "git+https://github.com/john1805/send-email-express.git"
   },
   "keywords": [
-    "send-email"
+    "data-school-managment"
   ],
   "author": "john",
   "license": "ISC",
