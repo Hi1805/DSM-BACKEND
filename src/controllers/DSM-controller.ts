@@ -11,13 +11,16 @@ class DSMController {
     try {
       const { email, subject, content, files }: bodyRequestEmail = req.body;
       const oAuth2Client = new google.auth.OAuth2(
-        process.env.CLIENT_ID,
+        process.env.CLIENT_ID_EMAIL,
         process.env.CLIENT_SECRET,
-        process.env.REDIRECT_URI
+        "https://developers.google.com/oauthplayground"
       );
+      console.log(process.env.CLIENT_ID_EMAIL);
+
       oAuth2Client.setCredentials({ refresh_token: process.env.REFRESH_TOKEN });
       const accessToken = await oAuth2Client.getAccessToken();
       // create reusable transporter object using the default SMTP transport
+
       let transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
         port: 587,
@@ -25,7 +28,7 @@ class DSMController {
         auth: {
           type: "OAuth2",
           user: "smartattendance01pro@gmail.com",
-          clientId: process.env.CLIENT_ID,
+          clientId: process.env.CLIENT_ID_EMAIL,
           clientSecret: process.env.CLIENT_SECRET,
           refreshToken: process.env.REFRESH_TOKEN,
           accessToken: accessToken,
@@ -48,7 +51,10 @@ class DSMController {
           return res.status(500).send(`Sent email ${email} went wrong`);
         });
     } catch (error) {
-      return res.status(500).send(error);
+      return res.status(500).send({
+        message: "send email failed",
+        error,
+      });
     }
   }
   async getClasses(req: Request, res: Response) {

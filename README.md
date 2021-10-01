@@ -1,12 +1,13 @@
-# DATA SCHOOL MANGEMENT BACKEND 
+# DATA SCHOOL MANGEMENT BACKEND
 
 📧 📧 📧 📧
-DSM USING NODEJS 
+DSM USING NODEJS
+dsm : DATA SCHOOL MANAGEMENT
 
-# init : file .env : 
+# init : file .env :
 
 USER: <example@gmail.com> </br>
-PASSWORD: **********
+PASSWORD: ****\*\*****
 
 # command :
 
