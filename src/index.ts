@@ -26,8 +26,10 @@ const specs = swaggerJsDoc(options);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
-app.use(Router);
+app.use("/api", Router);
 const port = process.env.PORT || "4000";
+console.log("LOADING.................");
+
 app.listen(port, () => {
   console.log(`server listen port http://localhost:${port}`);
 });

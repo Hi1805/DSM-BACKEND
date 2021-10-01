@@ -1,10 +1,13 @@
 import * as dotenv from "dotenv";
 dotenv.config();
+const { private_key } = require("./services.json");
+console.log();
+
 export const firebaseConfig = {
   type: process.env.TYPE || "",
   projectId: process.env.PROJECT_ID,
   private_key_id: process.env.PRIVATE_KEY_ID || "",
-  private_key: process.env.PRIVATE_KEY,
+  private_key: private_key,
   client_email: process.env.CLIENT_EMAIL,
   client_id: process.env.CLIENT_ID,
   auth_uri: "https://accounts.google.com/o/oauth2/auth",

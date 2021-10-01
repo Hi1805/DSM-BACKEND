@@ -1,6 +1,6 @@
 import * as nodemailer from "nodemailer";
 import { Request, Response } from "express";
-import { toString } from "lodash";
+import { toNumber, toString } from "lodash";
 import { bodyRequestEmail, ProfileTemplate } from "../types";
 import { db } from "../shared";
 const { google } = require("googleapis");
@@ -47,23 +47,6 @@ class DSMController {
         .catch(() => {
           return res.status(500).send(`Sent email ${email} went wrong`);
         });
-    } catch (error) {
-      return res.status(500).send(error);
-    }
-  }
-  async getListTeacher(req: Request, res: Response) {
-    try {
-      const teachers = await db
-        .collection("teachers")
-        .get()
-        .then((query: any) => {
-          let list: ProfileTemplate[] = [];
-          query.forEach((teacher: any) => {
-            list.push({ ...(teacher.data() as ProfileTemplate) });
-          });
-          return list;
-        });
-      return res.status(200).send(teachers);
     } catch (error) {
       return res.status(500).send(error);
     }
