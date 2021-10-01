@@ -66,7 +66,7 @@ class TeacherController {
         .set({
           total: total + 1,
         });
-      return res.status(200).send({
+      return res.status(201).send({
         message: "create teacher successfully",
       });
     } catch (error) {
@@ -96,6 +96,22 @@ class TeacherController {
     } catch (error) {
       return res.status(500).send({
         message: "edit teacher failed",
+      });
+    }
+  }
+  async deleteTeacher(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      if (!id) {
+        throw new Error("Teacher not Exist");
+      }
+      await db.collection("teachers").doc(id).delete();
+      return res.status(200).send({
+        message: "delete teacher successfully",
+      });
+    } catch (error) {
+      return res.status(500).send({
+        message: "delete teacher failed",
       });
     }
   }
