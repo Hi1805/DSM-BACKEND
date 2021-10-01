@@ -1,0 +1,157 @@
+paths:
+  /api/teacher/list:
+    get:
+      tags:
+        - Teachers
+      summary: Returns a list of Teachers.
+      description: Optional extended description in CommonMark or HTML.
+      parameters:
+        - name: page
+          in: query
+          required: false
+          description: page is Number.
+          schema:
+            type: integer
+            minimum: 1
+        - name: size
+          in: query
+          required: false
+          description: size is Number.
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200": # status code
+          description: A JSON array of teacher
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /api/teacher/total:
+    get:
+      tags:
+        - Teachers
+      summary: Returns a total of Teachers.
+      description: Optional extended description in CommonMark or HTML.
+      responses:
+        "200": # status code
+          description: A JSON array of teacher
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  - total:
+                      type: number
+                      example: 3
+  /api/teacher/create:
+    post:
+      tags:
+        - Teachers
+      summary: Create new teacher.
+      description: Optional extended description in CommonMark or HTML.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                Class:
+                  type: string
+                address:
+                  type: string
+                grade:
+                  type: integer
+                email:
+                  type: string
+                date_of_birth:
+                  type: string
+                  example: 2021-01-01
+      responses:
+        "200": # status code
+          description: A JSON array of teacher
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "create teacher successsfully"
+  /api/teacher/edit:
+    put:
+      tags:
+        - Teachers
+      summary: Edit a teacher.
+      description: Optional extended description in CommonMark or HTML.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  required: true
+                first_name:
+                  type: string
+                  required: false
+                last_name:
+                  type: string
+                  required: false
+                Class:
+                  type: string
+                  required: false
+                address:
+                  type: string
+                  required: false
+                grade:
+                  type: integer
+                  required: false
+                email:
+                  type: string
+                  required: false
+                date_of_birth:
+                  type: string
+                  example: 2021-01-01
+      responses:
+        "200": # status code
+          description: A JSON array of teacher
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "create teacher successsfully"
+/api/teacher/delete/{id}:
+  delete:
+    tags:
+      - Teachers
+    summary: Delete a teacher.
+    description: Optional extended description in CommonMark or HTML.
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      "200": # status code
+        description: A JSON array of teacher
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "delelte teacher successsfully"

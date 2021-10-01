@@ -9,7 +9,10 @@ class StudentController {
     try {
       const { page, size } = req.query;
       //offset : value start
+
       const offset = toNumber(size) * toNumber(page) - toNumber(size);
+      console.log(offset);
+
       if (toNumber(size) <= 0 || toNumber(page) <= 0) {
         return res.status(200).send([]);
       }
@@ -50,6 +53,9 @@ class StudentController {
       const { total } = (await (
         await db.collection("classes").doc(toString(grade)).get()
       ).data()) as { total: number };
+      if (!total) {
+        throw new Error("grade not found");
+      }
       const id = createID("student", total, date_of_birth, Class);
       await db
         .collection("students")
@@ -82,11 +88,14 @@ class StudentController {
     try {
       const { id }: Student = req.body;
       if (!id) {
-        throw new Error("Student not Exist");
+        throw new Error("Id invalid");
       }
+      const { id: studentId } = (
+        await db.collection("students").doc(id).get()
+      ).data() as Student;
       await db
         .collection("students")
-        .doc(id)
+        .doc(studentId)
         .set(
           {
             ...req.body,
@@ -99,6 +108,7 @@ class StudentController {
     } catch (error) {
       return res.status(500).send({
         message: "edit Student failed",
+        error,
       });
     }
   }

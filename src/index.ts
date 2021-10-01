@@ -16,11 +16,11 @@ const options = {
     },
     servers: [
       {
-        url: "https://data-school-mangement-01.herokuapp.com",
+        url: "http://localhost:4000",
       },
     ],
   },
-  apis: ["**/*.ts"],
+  apis: ["**/*.yaml"],
 };
 const specs = swaggerJsDoc(options);
 app.use(express.json());
