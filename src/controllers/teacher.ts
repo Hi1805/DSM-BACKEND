@@ -62,7 +62,11 @@ class TeacherController {
       return res.status(200).send({
         message: "add teacher successfully",
       });
-    } catch (error) {}
+    } catch (error) {
+      return res.status(500).send({
+        message: "add teacher failed",
+      });
+    }
   }
 }
 
