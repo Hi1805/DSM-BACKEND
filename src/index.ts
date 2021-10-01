@@ -16,8 +16,8 @@ const options = {
     },
     servers: [
       {
-        url: "https://data-school-mangement-01.herokuapp.com/",
-        description: "server",
+        url: "https://data-school-mangement-01.herokuapp.com",
+        description: "heroku",
       },
       {
         url: "http://localhost:4000",
