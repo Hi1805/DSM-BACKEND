@@ -10,6 +10,10 @@ class StudentController {
       const { page, size } = req.query;
       //offset : value start
       const offset = toNumber(size) * toNumber(page) - toNumber(size);
+      if (toNumber(size) <= 0 || toNumber(page) <= 0) {
+        return res.status(200).send([]);
+      }
+      console.log(offset);
 
       const students = (
         await db
@@ -22,7 +26,9 @@ class StudentController {
 
       return res.status(200).send(students);
     } catch (error) {
-      return res.status(500).send(error);
+      return res.status(500).send({
+        message: "get list students failed",
+      });
     }
   }
 
@@ -33,7 +39,9 @@ class StudentController {
         total,
       });
     } catch (error) {
-      return res.status(500).send(error);
+      return res.status(500).send({
+        message: "get total student failed",
+      });
     }
   }
   async createStudent(req: Request, res: Response) {

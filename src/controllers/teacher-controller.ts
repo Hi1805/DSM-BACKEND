@@ -9,6 +9,9 @@ class TeacherController {
     try {
       const { page, size } = req.query;
       const offset = toNumber(size) * toNumber(page) - toNumber(size);
+      if (toNumber(size) <= 0 || toNumber(page) <= 0) {
+        return res.status(200).send([]);
+      }
       const teachers = (
         await db
           .collection("teachers")
@@ -19,7 +22,9 @@ class TeacherController {
       ).docs.map((doc) => doc.data());
       return res.status(200).send(teachers);
     } catch (error) {
-      return res.status(500).send(error);
+      return res.status(500).send({
+        message: "get teachers failed",
+      });
     }
   }
 
@@ -30,7 +35,9 @@ class TeacherController {
         total,
       });
     } catch (error) {
-      return res.status(500).send(error);
+      return res.status(500).send({
+        message: "get total failed",
+      });
     }
   }
   async createTeacher(req: Request, res: Response) {
