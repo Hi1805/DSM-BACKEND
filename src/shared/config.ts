@@ -5,7 +5,7 @@ const private_key = toString(process.env.PRIVATE_KEY).replace(/\\n/g, "\n");
 console.log(private_key);
 
 export const firebaseConfig = {
-  type: process.env.TYPE,
+  type: "service_account",
   projectId: process.env.PROJECT_ID,
   private_key_id: process.env.PRIVATE_KEY_ID,
   private_key: private_key,
