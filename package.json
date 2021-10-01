@@ -22,6 +22,7 @@
   "homepage": "https://github.com/john1805/send-email-express#readme",
   "dependencies": {
     "@types/express": "^4.17.13",
+    "@types/jsonwebtoken": "^8.5.5",
     "@types/lodash": "^4.14.173",
     "@types/nodemailer": "^6.4.4",
     "@types/swagger-jsdoc": "^6.0.1",
@@ -31,6 +32,7 @@
     "firebase": "8.8.0",
     "firebase-admin": "^9.12.0",
     "googleapis": "^85.0.0",
+    "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
     "nodemailer": "6.6.1",
     "nodemon": "^2.0.12",

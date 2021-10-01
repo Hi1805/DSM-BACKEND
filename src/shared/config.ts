@@ -1,8 +1,6 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 const { private_key } = require("./services.json");
-console.log();
-
 export const firebaseConfig = {
   type: process.env.TYPE || "",
   projectId: process.env.PROJECT_ID,
