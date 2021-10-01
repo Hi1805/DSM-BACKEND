@@ -4,14 +4,25 @@ export interface bodyRequestEmail {
   content: string;
   files: string[];
 }
-export interface ProfileTemplate {
+export interface Teacher {
   id: string;
   first_name: string;
   last_name: string;
   date_of_birth: string;
   gender: string;
   email: string;
-  class?: string;
+  Class?: string;
+  address: string;
+  grade?: number;
+}
+export interface Student {
+  id: string;
+  first_name: string;
+  last_name: string;
+  date_of_birth: string;
+  gender: string;
+  email: string;
+  Class?: string;
   address: string;
   grade?: number;
 }

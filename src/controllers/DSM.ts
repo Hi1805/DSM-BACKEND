@@ -1,7 +1,7 @@
 import * as nodemailer from "nodemailer";
 import { Request, Response } from "express";
 import { toNumber, toString } from "lodash";
-import { bodyRequestEmail, ProfileTemplate } from "../types";
+import { bodyRequestEmail, Teacher } from "../types";
 import { db } from "../shared";
 const { google } = require("googleapis");
 
