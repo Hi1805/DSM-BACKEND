@@ -1,8 +1,7 @@
-# send-email-express
+# DATA SCHOOL MANGEMENT BACKEND 
 
 📧 📧 📧 📧
-
-Send email express using nodemailer , Run Project With
+DSM USING NODEJS 
 
 # init : file .env : 
 
