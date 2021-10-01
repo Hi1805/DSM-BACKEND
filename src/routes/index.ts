@@ -1,5 +1,5 @@
 import * as express from "express";
-import { sendEmailController } from "../controllers/send";
+import DSMController from "../controllers/DSM";
 
 const router = express.Router();
 
@@ -33,6 +33,6 @@ const router = express.Router();
  *       500:
  *         description: Some server error
  */
-router.post("/send", sendEmailController);
-
+router.post("/send", DSMController.sendEmail);
+router.get("/list/teacher", DSMController.getListTeacher);
 export default router;
