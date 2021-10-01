@@ -19,11 +19,6 @@ const options = {
         url: "https://data-school-mangement-01.herokuapp.com",
         description: "heroku",
       },
-      {
-        url: "http://localhost:4000",
-        description: "localhost",
-      },
-      ,
     ],
   },
   apis: ["**/*.yaml"],
