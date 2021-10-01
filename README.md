@@ -2,13 +2,9 @@
 
 📧 📧 📧 📧
 DSM USING NODEJS
-dsm : DATA SCHOOL MANAGEMENT
+~ dsm : DATA SCHOOL MANAGEMENT
 
 # init : file .env :
-
-USER: <example@gmail.com> </br>
-PASSWORD: ****\*\*****
-
-# command :
-
-yarn start:dev or npm start:dev
+# apis : https://data-school-mangement-01.herokuapp.com/api-docs/
+# Run with :
+  npm start
