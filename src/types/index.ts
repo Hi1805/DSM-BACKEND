@@ -26,3 +26,7 @@ export interface Student {
   address: string;
   grade?: number;
 }
+export interface ClassesResponse {
+  grade: number;
+  value: string[];
+}

@@ -1,7 +1,7 @@
 import * as nodemailer from "nodemailer";
 import { Request, Response } from "express";
-import { toNumber, toString } from "lodash";
-import { bodyRequestEmail, Teacher } from "../types";
+import { toString } from "lodash";
+import { bodyRequestEmail, ClassesResponse } from "../types";
 import { db } from "../shared";
 const { google } = require("googleapis");
 
@@ -47,6 +47,20 @@ class DSMController {
         .catch(() => {
           return res.status(500).send(`Sent email ${email} went wrong`);
         });
+    } catch (error) {
+      return res.status(500).send(error);
+    }
+  }
+  async getClasses(req: Request, res: Response) {
+    try {
+      const grades: ClassesResponse[] = (
+        await db.collection("classes").get()
+      ).docs.map((doc) => {
+        const data = { ...doc.data() };
+        delete data.total;
+        return data as ClassesResponse;
+      });
+      return res.status(200).send(grades);
     } catch (error) {
       return res.status(500).send(error);
     }

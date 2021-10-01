@@ -1,5 +1,5 @@
 import * as express from "express";
-import TeacherController from "../../controllers/teacher";
+import TeacherController from "../../controllers/teacher-controller";
 const teacherRouter = express.Router();
 teacherRouter.get("/list", TeacherController.getListTeacher);
 teacherRouter.get("/total", TeacherController.getTotalTeacher);

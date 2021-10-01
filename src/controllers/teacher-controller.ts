@@ -37,7 +37,7 @@ class TeacherController {
     try {
       const { date_of_birth }: Teacher = req.body;
       const { total } = (await (
-        await db.collection("classes").doc("total_teacher").get()
+        await db.collection("total").doc("total_teacher").get()
       ).data()) as { total: number };
 
       const id = createID("teacher", total, date_of_birth);
