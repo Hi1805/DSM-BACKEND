@@ -45,12 +45,13 @@ class TeacherController {
       return res.status(500).send(error);
     }
   }
-  async addTeacher(req: Request, res: Response) {
+  async createTeacher(req: Request, res: Response) {
     try {
       const { date_of_birth }: Teacher = req.body;
       const { total } = (await (
         await db.collection("classes").doc("total_teacher").get()
       ).data()) as { total: number };
+
       const id = createID("teacher", total, date_of_birth);
       await db
         .collection("teachers")
@@ -59,12 +60,42 @@ class TeacherController {
           ...req.body,
           id,
         });
+      await db
+        .collection("classes")
+        .doc("total_teacher")
+        .set({
+          total: total + 1,
+        });
       return res.status(200).send({
-        message: "add teacher successfully",
+        message: "create teacher successfully",
       });
     } catch (error) {
       return res.status(500).send({
-        message: "add teacher failed",
+        message: "create teacher failed",
+      });
+    }
+  }
+  async editTeacher(req: Request, res: Response) {
+    try {
+      const { id }: Teacher = req.body;
+      if (!id) {
+        throw new Error("Teacher not Exist");
+      }
+      await db
+        .collection("teachers")
+        .doc(id)
+        .set(
+          {
+            ...req.body,
+          },
+          { merge: true }
+        );
+      return res.status(200).send({
+        message: "edit teacher successfully",
+      });
+    } catch (error) {
+      return res.status(500).send({
+        message: "edit teacher failed",
       });
     }
   }
