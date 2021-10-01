@@ -57,8 +57,7 @@ class DSMController {
         await db.collection("classes").get()
       ).docs.map((doc) => {
         const data = { ...doc.data() };
-        delete data.total;
-        return data as ClassesResponse;
+        return { ...data, ...{ total: undefined } } as ClassesResponse;
       });
       return res.status(200).send(grades);
     } catch (error) {

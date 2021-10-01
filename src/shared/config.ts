@@ -1,6 +1,7 @@
 import * as dotenv from "dotenv";
+import { toString } from "lodash";
 dotenv.config();
-const { private_key } = require("./services.json");
+const private_key = toString(process.env.PRIVATE_KEY).replace(/\\n/g, "\n");
 export const firebaseConfig = {
   type: process.env.TYPE || "",
   projectId: process.env.PROJECT_ID,

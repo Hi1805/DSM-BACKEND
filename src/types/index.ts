@@ -29,4 +29,5 @@ export interface Student {
 export interface ClassesResponse {
   grade: number;
   value: string[];
+  total: number | undefined;
 }
