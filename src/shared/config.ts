@@ -3,9 +3,9 @@ import { toString } from "lodash";
 dotenv.config();
 const private_key = toString(process.env.PRIVATE_KEY).replace(/\\n/g, "\n");
 export const firebaseConfig = {
-  type: process.env.TYPE || "",
+  type: process.env.TYPE,
   projectId: process.env.PROJECT_ID,
-  private_key_id: process.env.PRIVATE_KEY_ID || "",
+  private_key_id: process.env.PRIVATE_KEY_ID,
   private_key: private_key,
   client_email: process.env.CLIENT_EMAIL,
   client_id: process.env.CLIENT_ID,
