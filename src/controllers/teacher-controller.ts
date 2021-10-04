@@ -8,6 +8,10 @@ class TeacherController {
   async getListTeacher(req: Request, res: Response) {
     try {
       const { page, size } = req.query;
+
+      if (!page || !size) {
+        return res.send(200).send([]);
+      }
       const offset = toNumber(size) * toNumber(page) - toNumber(size);
       if (toNumber(size) <= 0 || toNumber(page) <= 0) {
         return res.status(200).send([]);

@@ -9,14 +9,13 @@ class StudentController {
     try {
       const { page, size } = req.query;
       //offset : value start
-
+      if (!page || !size) {
+        return res.send(200).send([]);
+      }
       const offset = toNumber(size) * toNumber(page) - toNumber(size);
-      console.log(offset);
-
       if (toNumber(size) <= 0 || toNumber(page) <= 0) {
         return res.status(200).send([]);
       }
-      console.log(offset);
 
       const students = (
         await db
