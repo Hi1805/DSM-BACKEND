@@ -1,55 +1,19 @@
-import * as nodemailer from "nodemailer";
 import { Request, Response } from "express";
 import { toString } from "lodash";
 import { bodyRequestEmail, ClassesResponse } from "../types";
-import { db } from "../shared";
-const { google } = require("googleapis");
+import { db } from "./../shared";
+import { sendMail } from "../helpers/send";
 
 // DSM Data School Managment
 class DSMController {
   async sendEmail(req: Request, res: Response) {
     try {
       const { email, subject, content, files }: bodyRequestEmail = req.body;
-      const oAuth2Client = new google.auth.OAuth2(
-        process.env.CLIENT_ID_EMAIL,
-        process.env.CLIENT_SECRET,
-        "https://developers.google.com/oauthplayground"
-      );
-      console.log(process.env.CLIENT_ID_EMAIL);
-
-      oAuth2Client.setCredentials({ refresh_token: process.env.REFRESH_TOKEN });
-      const accessToken = await oAuth2Client.getAccessToken();
-      // create reusable transporter object using the default SMTP transport
-
-      let transporter = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 587,
-        secure: false, // true for 465, false for other ports
-        auth: {
-          type: "OAuth2",
-          user: "smartattendance01pro@gmail.com",
-          clientId: process.env.CLIENT_ID_EMAIL,
-          clientSecret: process.env.CLIENT_SECRET,
-          refreshToken: process.env.REFRESH_TOKEN,
-          accessToken: accessToken,
-        },
-        logger: true,
-      });
+      const message = await sendMail(email, subject, content, files);
       // send mail with defined transport object
-      return await transporter
-        .sendMail({
-          from: '"OFA 👻" <OFA@gmail.com>', // sender address
-          to: toString(email), // list of receivers
-          subject: subject, // Subject line
-          text: `<div>${content}</div>`, // plain text body
-          html: `<div>${content}</div>`, // html body
-        })
-        .then(() => {
-          return res.status(200).send(`Sent email ${email} successfully`);
-        })
-        .catch(() => {
-          return res.status(500).send(`Sent email ${email} went wrong`);
-        });
+      return res.status(200).send({
+        message: message,
+      });
     } catch (error) {
       return res.status(500).send({
         message: "send email failed",

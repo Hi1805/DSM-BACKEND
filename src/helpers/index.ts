@@ -1,5 +1,4 @@
-import { toNumber, toString } from "lodash";
-import { Teacher } from "../types";
+import { toNumber } from "lodash";
 export const createID = (
   type: "student" | "teacher",
   total: number,
@@ -12,3 +11,5 @@ export const createID = (
     ? code + Class + year + total
     : code + year + toNumber(total);
 };
+
+export * from "./valid";

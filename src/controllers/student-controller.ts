@@ -1,8 +1,8 @@
-import { get, toNumber, toString } from "lodash";
+import { toNumber, toString } from "lodash";
 import { db } from "../shared";
 import { Request, Response } from "express";
 import { Student } from "../types";
-import { createID } from "../helpers";
+import { createID, isValidRequest } from "../helpers";
 
 class StudentController {
   async getListStudent(req: Request, res: Response) {
@@ -25,8 +25,12 @@ class StudentController {
           .offset(offset)
           .get()
       ).docs.map((doc) => doc.data());
+      const total = await (await db.collection("students").get()).size;
 
-      return res.status(200).send(students);
+      return res.status(200).send({
+        list: students,
+        total,
+      });
     } catch (error) {
       return res.status(500).send({
         message: "get list students failed",
@@ -48,61 +52,103 @@ class StudentController {
   }
   async createStudent(req: Request, res: Response) {
     try {
-      const { date_of_birth, grade, Class }: Student = req.body;
-      const { total } = (await (
-        await db.collection("classes").doc(toString(grade)).get()
-      ).data()) as { total: number };
-      if (!total) {
-        throw new Error("grade not found");
-      }
-      const id = createID("student", total, date_of_birth, Class);
-      await db
-        .collection("students")
-        .doc(id)
-        .set({
-          ...req.body,
-          id,
-        });
-      await db
-        .collection("classes")
-        .doc(toString(grade))
-        .set(
-          {
-            total: total + 1,
-          },
-          {
-            merge: true,
-          }
-        );
-      return res.status(201).send({
-        message: "create Student successfully",
+      const {
+        date_of_birth,
+        grade,
+        Class,
+        gender,
+        first_name,
+        last_name,
+        email,
+      }: Student = req.body;
+      const { status, message } = await isValidRequest({
+        first_name,
+        last_name,
+        gender,
+        date_of_birth,
+        email,
+        grade: toNumber(grade),
+        Class: toString(Class),
       });
-    } catch (error) {
+      if (status) {
+        const { total } = (await (
+          await db.collection("classes").doc(toString(grade)).get()
+        ).data()) as { total: number };
+        const id = createID("student", total, date_of_birth, Class);
+        await db
+          .collection("students")
+          .doc(id)
+          .set({
+            ...req.body,
+            id,
+          });
+        await db
+          .collection("classes")
+          .doc(toString(grade))
+          .set(
+            {
+              total: total + 1,
+            },
+            {
+              merge: true,
+            }
+          );
+        return res.status(201).send({
+          message: "create Student successfully",
+        });
+      } else
+        return res.status(400).send({
+          message: message,
+        });
+    } catch (error: any) {
       return res.status(500).send({
-        message: "create Student failed",
+        message: error.message,
       });
     }
   }
   async editStudent(req: Request, res: Response) {
     try {
-      const { id }: Student = req.body;
+      const {
+        id,
+        first_name,
+        last_name,
+        gender,
+        date_of_birth,
+        email,
+        grade,
+        Class,
+      }: Student = req.body;
       if (!id) {
         throw new Error("Id invalid");
       }
-      const { id: studentId } = (
-        await db.collection("students").doc(id).get()
-      ).data() as Student;
-      await db
-        .collection("students")
-        .doc(studentId)
-        .set(
-          {
-            ...req.body,
-          },
-          { merge: true }
-        );
-      return res.status(200).send({
-        message: "edit Student successfully",
+      const { status, message } = await isValidRequest({
+        first_name,
+        last_name,
+        gender,
+        date_of_birth,
+        email,
+        grade: toNumber(grade),
+        Class: toString(Class),
+      });
+      if (status) {
+        const { id: studentId } = (
+          await db.collection("students").doc(id).get()
+        ).data() as Student;
+        await db
+          .collection("students")
+          .doc(studentId)
+          .set(
+            {
+              ...req.body,
+            },
+            { merge: true }
+          );
+        return res.status(200).send({
+          message: "edit Student successfully",
+        });
+      }
+      return res.status(500).send({
+        message,
       });
     } catch (error) {
       return res.status(500).send({

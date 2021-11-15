@@ -16,7 +16,7 @@ class TeacherController {
       if (toNumber(size) <= 0 || toNumber(page) <= 0) {
         return res.status(200).send([]);
       }
-      const teachers = (
+      const list = (
         await db
           .collection("teachers")
           .orderBy("last_name")
@@ -24,7 +24,11 @@ class TeacherController {
           .offset(offset)
           .get()
       ).docs.map((doc) => doc.data());
-      return res.status(200).send(teachers);
+      const total = await (await db.collection("teachers").get()).size;
+      return res.status(200).send({
+        list,
+        total,
+      });
     } catch (error) {
       return res.status(500).send({
         message: "get teachers failed",
@@ -47,6 +51,7 @@ class TeacherController {
   async createTeacher(req: Request, res: Response) {
     try {
       const { date_of_birth }: Teacher = req.body;
+
       const { total } = (await (
         await db.collection("total").doc("total_teacher").get()
       ).data()) as { total: number };

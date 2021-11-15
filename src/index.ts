@@ -1,8 +1,8 @@
-import * as express from "express";
-import * as dotenv from "dotenv";
-import * as swaggerUi from "swagger-ui-express";
-import * as swaggerJsDoc from "swagger-jsdoc";
-import * as cors from "cors";
+import express from "express";
+import dotenv from "dotenv";
+import swaggerUi from "swagger-ui-express";
+import swaggerJsDoc from "swagger-jsdoc";
+import cors from "cors";
 import Router from "./routes";
 dotenv.config();
 
@@ -34,5 +34,5 @@ const port = process.env.PORT || "4000";
 console.log("LOADING.................");
 
 app.listen(port, () => {
-  console.log(`server listen port http://localhost:${port}`);
+  console.log(`server listen port http://localhost:${port}/api`);
 });
