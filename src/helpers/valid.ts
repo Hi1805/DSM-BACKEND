@@ -36,6 +36,8 @@ export const isValidRequest = async ({
   Class,
 }: isValidParams) => {
   try {
+    console.log("run valid");
+
     if (!validateName(first_name)) {
       throw new Error("First name is not valid");
     }
@@ -52,6 +54,8 @@ export const isValidRequest = async ({
     if (!validateEmail(email)) {
       throw new Error("Email not valid");
     }
+    console.log("run valid");
+
     const collectionClass = await (
       await db.collection("classes").get()
     ).docs.map((item) => item.data() as ClassesResponse);
@@ -59,8 +63,12 @@ export const isValidRequest = async ({
     if (!grades.includes(grade)) {
       throw new Error("Grade is not valid");
     }
-    const clasees = collectionClass.find((item) => item.grade === grade)?.value;
-    if (!clasees || !clasees.includes(Class)) {
+    const classes = collectionClass.find(
+      (item) => item.grade === grade
+    )?.values;
+    console.log({ Class });
+
+    if (!classes || !classes.includes(Class)) {
       throw new Error("Class is not valid");
     }
     return {
@@ -68,6 +76,8 @@ export const isValidRequest = async ({
       message: "",
     };
   } catch (error: any) {
+    console.log("error", error);
+
     return {
       status: false,
       message: error.message,

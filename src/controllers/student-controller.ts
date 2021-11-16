@@ -1,7 +1,7 @@
 import { toNumber, toString } from "lodash";
 import { db } from "../shared";
 import { Request, Response } from "express";
-import { Student } from "../types";
+import { CommonError, Student } from "../types";
 import { createID, isValidRequest } from "../helpers";
 
 class StudentController {
@@ -37,7 +37,19 @@ class StudentController {
       });
     }
   }
-
+  async getInfoStudent(req: Request, res: Response) {
+    try {
+      const { id } = req.query;
+      const student = (
+        await db.collection("students").doc(toString(id)).get()
+      ).data();
+      return res.status(200).send(student);
+    } catch (error) {
+      return res.status(404).send({
+        message: "student not found",
+      });
+    }
+  }
   async getTotalStudent(req: Request, res: Response) {
     try {
       const total = (await db.collection("students").get()).size;
@@ -94,7 +106,7 @@ class StudentController {
             }
           );
         return res.status(201).send({
-          message: "create Student successfully",
+          message: "Create Student successfully",
         });
       } else
         return res.status(400).send({
@@ -118,8 +130,10 @@ class StudentController {
         grade,
         Class,
       }: Student = req.body;
+      console.log(req.body);
+
       if (!id) {
-        throw new Error("Id invalid");
+        throw new Error("ID invalid");
       }
       const { status, message } = await isValidRequest({
         first_name,
@@ -130,6 +144,8 @@ class StudentController {
         grade: toNumber(grade),
         Class: toString(Class),
       });
+      console.log("status", status);
+
       if (status) {
         const { id: studentId } = (
           await db.collection("students").doc(id).get()
@@ -144,16 +160,15 @@ class StudentController {
             { merge: true }
           );
         return res.status(200).send({
-          message: "edit Student successfully",
+          message: `Edit student ${id} successfully `,
         });
       }
       return res.status(500).send({
         message,
       });
-    } catch (error) {
+    } catch (error: any) {
       return res.status(500).send({
-        message: "edit Student failed",
-        error,
+        message: error.message,
       });
     }
   }

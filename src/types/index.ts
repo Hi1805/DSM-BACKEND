@@ -28,6 +28,10 @@ export interface Student {
 }
 export interface ClassesResponse {
   grade: number;
-  value: string[];
+  values: string[];
   total: number | undefined;
+}
+export interface CommonError {
+  message?: string;
+  code?: number;
 }
