@@ -23,9 +23,7 @@ interface isValidParams {
   Class: string;
   grade: number;
 }
-interface responseValid {
-  message: string;
-}
+
 export const isValidRequest = async ({
   first_name,
   last_name,

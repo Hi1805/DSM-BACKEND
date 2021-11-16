@@ -30,6 +30,7 @@ class StudentController {
       return res.status(200).send({
         list: students,
         total,
+        pagination: req.query,
       });
     } catch (error) {
       return res.status(500).send({
@@ -176,15 +177,15 @@ class StudentController {
     try {
       const { id } = req.params;
       if (!id) {
-        throw new Error("Student not Exist");
+        throw new Error("ID not Exist");
       }
       await db.collection("students").doc(id).delete();
       return res.status(200).send({
-        message: "delete Student successfully",
+        message: "Delete student successfully",
       });
-    } catch (error) {
+    } catch (error: any) {
       return res.status(500).send({
-        message: "delete Student failed",
+        message: error.message,
       });
     }
   }
