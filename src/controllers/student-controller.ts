@@ -7,34 +7,53 @@ import { createID, isValidRequest } from "../helpers";
 class StudentController {
   async getListStudent(req: Request, res: Response) {
     try {
-      const { page, size } = req.query;
+      const { page, size, isSort } = req.query;
       //offset : value start
       if (!page || !size) {
         return res.send(200).send([]);
       }
+      console.log(req.query);
+
       const offset = toNumber(size) * toNumber(page) - toNumber(size);
       if (toNumber(size) <= 0 || toNumber(page) <= 0) {
         return res.status(200).send([]);
       }
-
-      const students = (
-        await db
-          .collection("students")
-          .orderBy("last_name")
-          .limit(toNumber(size))
-          .offset(offset)
-          .get()
-      ).docs.map((doc) => doc.data());
       const total = await (await db.collection("students").get()).size;
+      let students: Student[] = [];
+      if (isSort === "true") {
+        students = (
+          await db
+            .collection("students")
+            .orderBy("last_name")
+            // .orderBy("first_name")
+            .limit(toNumber(size))
+            .offset(offset)
+            .get()
+        ).docs.map((doc) => doc.data() as Student);
+      } else {
+        students = (
+          await db
+            .collection("students")
+            .orderBy("last_name", "desc")
+            // .orderBy("first_name")
+            .limit(toNumber(size))
+            .offset(offset)
+            .get()
+        ).docs.map((doc) => doc.data() as Student);
+      }
 
       return res.status(200).send({
         list: students,
         total,
-        pagination: req.query,
+        pagination: {
+          page,
+          size,
+        },
       });
-    } catch (error) {
+    } catch (error: any) {
       return res.status(500).send({
         message: "get list students failed",
+        error: error.message,
       });
     }
   }
