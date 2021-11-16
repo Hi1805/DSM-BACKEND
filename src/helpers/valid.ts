@@ -23,19 +23,20 @@ interface isValidParams {
   Class: string;
   grade: number;
 }
-
-export const isValidRequest = async ({
-  first_name,
-  last_name,
-  date_of_birth,
-  gender,
-  email,
-  grade,
-  Class,
-}: isValidParams) => {
+type typeValid = "student" | "teacher";
+export const isValidRequest = async (
+  {
+    first_name,
+    last_name,
+    date_of_birth,
+    gender,
+    email,
+    grade,
+    Class,
+  }: isValidParams,
+  type: typeValid = "student"
+) => {
   try {
-    console.log("run valid");
-
     if (!validateName(first_name)) {
       throw new Error("First name is not valid");
     }
@@ -52,23 +53,23 @@ export const isValidRequest = async ({
     if (!validateEmail(email)) {
       throw new Error("Email not valid");
     }
-    console.log("run valid");
 
-    const collectionClass = await (
-      await db.collection("classes").get()
-    ).docs.map((item) => item.data() as ClassesResponse);
-    const grades = collectionClass.map((item) => item.grade);
-    if (!grades.includes(grade)) {
-      throw new Error("Grade is not valid");
+    if (type === "student" || grade || Class) {
+      const collectionClass = await (
+        await db.collection("classes").get()
+      ).docs.map((item) => item.data() as ClassesResponse);
+      const grades = collectionClass.map((item) => item.grade);
+      if (!grades.includes(grade)) {
+        throw new Error("Grade is not valid");
+      }
+      const classes = collectionClass.find(
+        (item) => item.grade === grade
+      )?.values;
+      if (!classes || !classes.includes(Class)) {
+        throw new Error("Class is not valid");
+      }
     }
-    const classes = collectionClass.find(
-      (item) => item.grade === grade
-    )?.values;
-    console.log({ Class });
 
-    if (!classes || !classes.includes(Class)) {
-      throw new Error("Class is not valid");
-    }
     return {
       status: true,
       message: "",

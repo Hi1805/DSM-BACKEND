@@ -1,7 +1,7 @@
 import { toNumber, toString } from "lodash";
 import { db } from "../shared";
 import { Request, Response } from "express";
-import { CommonError, Student } from "../types";
+import { Student } from "../types";
 import { createID, isValidRequest } from "../helpers";
 
 class StudentController {
@@ -164,7 +164,6 @@ class StudentController {
         grade: toNumber(grade),
         Class: toString(Class),
       });
-      console.log("status", status);
 
       if (status) {
         const { id: studentId } = (
