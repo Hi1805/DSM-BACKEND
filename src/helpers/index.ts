@@ -8,7 +8,7 @@ export const createID = (
   const code = type === "student" ? "ST" : "TC";
   const year = new Date(date_of_birth).getFullYear();
   return type === "student"
-    ? code + Class + year + total
+    ? code + year + total
     : code + year + toNumber(total);
 };
 
