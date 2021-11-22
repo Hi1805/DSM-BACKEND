@@ -7,3 +7,4 @@ admin.initializeApp({
 console.log("connect firebase is successfully");
 
 export const db = admin.firestore();
+export const auth = admin.auth();

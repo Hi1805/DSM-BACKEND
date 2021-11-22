@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { toString } from "lodash";
 import { bodyRequestEmail, ClassesResponse } from "../types";
-import { db } from "./../shared";
+import { auth, db } from "./../shared";
 import { sendMail } from "../helpers/send";
-
+import * as jwt from "jsonwebtoken";
 // DSM Data School Managment
 class DSMController {
   async sendEmail(req: Request, res: Response) {
@@ -33,6 +33,34 @@ class DSMController {
     } catch (error) {
       return res.status(500).send({
         message: "get classes failed",
+      });
+    }
+  }
+  async login(req: Request, res: Response) {
+    try {
+      const { email, password } = req.body;
+      const user = (
+        await db
+          .collection("accounts")
+          .where("email", "==", email)
+          .where("password", "==", password)
+          .get()
+      ).docs;
+      if (!user.length) {
+        throw new Error("Email or password incorrect ");
+      }
+      return res.json({
+        token: jwt.sign(
+          {
+            email: email,
+            password,
+          },
+          process.env.ACCESS_TOKEN_SECRET || ""
+        ),
+      });
+    } catch (error: any) {
+      return res.status(401).send({
+        message: error.message,
       });
     }
   }

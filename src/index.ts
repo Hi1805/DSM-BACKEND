@@ -10,15 +10,28 @@ const app = express();
 const options = {
   definition: {
     openapi: "3.0.0",
+
     info: {
       title: "Library API - School Data Manamgent",
       version: "1.0.0",
       description: "One For All API ",
     },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "https",
+          scheme: "bearer",
+        },
+      },
+    },
     servers: [
       {
         url: "https://data-school-mangement-01.herokuapp.com",
         description: "heroku",
+      },
+      {
+        url: "http://localhost:4000",
+        description: "localhost",
       },
     ],
   },

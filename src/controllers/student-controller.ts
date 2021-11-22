@@ -12,7 +12,6 @@ class StudentController {
       if (!page || !size) {
         return res.send(200).send([]);
       }
-      console.log(req.query);
 
       const offset = toNumber(size) * toNumber(page) - toNumber(size);
       if (toNumber(size) <= 0 || toNumber(page) <= 0) {
@@ -57,6 +56,7 @@ class StudentController {
       });
     }
   }
+
   async getInfoStudent(req: Request, res: Response) {
     try {
       const { id } = req.query;
@@ -70,6 +70,7 @@ class StudentController {
       });
     }
   }
+
   async getTotalStudent(req: Request, res: Response) {
     try {
       const total = (await db.collection("students").get()).size;
@@ -207,6 +208,7 @@ class StudentController {
       });
     }
   }
+  async searchStudent(req: Request, res: Response) {}
 }
 
 export default new StudentController();

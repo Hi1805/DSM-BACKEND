@@ -1,3 +1,4 @@
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJpcGtlcjE4MDVAZ21haWwuY29tIiwicGFzc3dvcmQiOiIxMjM0NTYiLCJpYXQiOjE2Mzc1ODQ3ODF9.N8VXYMivaZ3AqEXey8KfCBZLHa-5ItENTeQh2s4rdzc
 paths:
   /api/dsm/classes:
     get:
