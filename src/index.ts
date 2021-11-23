@@ -10,7 +10,6 @@ const app = express();
 const options = {
   definition: {
     openapi: "3.0.0",
-
     info: {
       title: "Library API - School Data Manamgent",
       version: "1.0.0",
@@ -19,7 +18,7 @@ const options = {
     components: {
       securitySchemes: {
         bearerAuth: {
-          type: "https",
+          type: "http",
           scheme: "bearer",
         },
       },

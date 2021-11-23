@@ -23,9 +23,6 @@ export async function authenticateToken(
           throw new Error("user went wrong");
         }
         req.body.user = user;
-        res.status(201).send({
-          message: "login successfully",
-        });
         next();
       }
     );

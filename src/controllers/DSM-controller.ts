@@ -21,6 +21,7 @@ class DSMController {
       });
     }
   }
+
   async getClasses(req: Request, res: Response) {
     try {
       const grades: ClassesResponse[] = (
@@ -39,6 +40,7 @@ class DSMController {
   async login(req: Request, res: Response) {
     try {
       const { email, password } = req.body;
+
       const user = (
         await db
           .collection("accounts")
@@ -64,6 +66,7 @@ class DSMController {
       });
     }
   }
+  async changePassword(req: Request, res: Response) {}
 }
 
 export default new DSMController();
