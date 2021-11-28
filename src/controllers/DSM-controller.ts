@@ -52,8 +52,8 @@ class DSMController {
           .where("password", "==", password)
           .get()
       ).docs[0];
-      let ip = req.ip;
-      const location = geoip.lookup(req.ip);
+      let ip = req.connection.remoteAddress || "";
+      const location = geoip.lookup(ip);
       if (ip.substr(0, 7) == "::ffff:") {
         ip = ip.substr(7);
       }
