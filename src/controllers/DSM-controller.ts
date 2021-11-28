@@ -5,7 +5,8 @@ import { sendMail } from "../helpers/send";
 import * as jwt from "jsonwebtoken";
 import DeviceDetector from "device-detector-js";
 import geoip from "geoip-lite";
-import bscrypt from "bcrypt";
+import * as requestIp from "request-ip";
+
 class DSMController {
   async sendEmail(req: Request, res: Response) {
     try {
@@ -41,10 +42,13 @@ class DSMController {
   async login(req: Request, res: Response) {
     try {
       const { email, password } = req.body;
+
       const user_agent = req.headers["user-agent"];
       if (!email && password && user_agent) {
         throw new Error("Info login not valid");
       }
+      const clientIp = requestIp.getClientIp(req);
+
       const user = (
         await db
           .collection("accounts")
@@ -53,14 +57,16 @@ class DSMController {
           .get()
       ).docs[0];
       let ip = req.connection.remoteAddress || "";
-      const location = geoip.lookup(ip);
+      const location = geoip.lookup(clientIp || "");
       if (ip.substr(0, 7) == "::ffff:") {
         ip = ip.substr(7);
       }
+      console.log("clientip", clientIp);
+      console.log("location", location);
+
       const ip_address = ip;
       const deviceDetector = new DeviceDetector();
       const device = deviceDetector.parse(user_agent || "");
-      console.log(location);
 
       await db.collection("history").add({
         date: new Date(),
