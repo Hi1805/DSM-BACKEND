@@ -47,7 +47,7 @@ class DSMController {
       if (!email && password && user_agent) {
         throw new Error("Info login not valid");
       }
-      const clientIp = requestIp.getClientIp(req);
+      let clientIp = requestIp.getClientIp(req) || "";
 
       const user = (
         await db
@@ -56,22 +56,17 @@ class DSMController {
           .where("password", "==", password)
           .get()
       ).docs[0];
-      let ip = req.connection.remoteAddress || "";
-      const location = geoip.lookup(clientIp || "");
-      if (ip.substr(0, 7) == "::ffff:") {
-        ip = ip.substr(7);
+      const location = geoip.lookup(clientIp);
+      if (clientIp.substr(0, 7) == "::ffff:") {
+        clientIp = clientIp.substr(7);
       }
-      console.log("clientip", clientIp);
-      console.log("location", location);
-
-      const ip_address = ip;
       const deviceDetector = new DeviceDetector();
       const device = deviceDetector.parse(user_agent || "");
 
       await db.collection("history").add({
         date: new Date(),
         status: typeof user !== undefined,
-        user_ip: ip_address,
+        user_ip: clientIp,
         location: location,
         client: device.client,
         os: device.os,
