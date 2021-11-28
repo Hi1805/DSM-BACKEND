@@ -53,13 +53,13 @@ class DSMController {
           .get()
       ).docs[0];
       let ip = req.ip;
+      const location = geoip.lookup(req.ip);
       if (ip.substr(0, 7) == "::ffff:") {
         ip = ip.substr(7);
       }
       const ip_address = ip;
       const deviceDetector = new DeviceDetector();
       const device = deviceDetector.parse(user_agent || "");
-      const location = geoip.lookup(ip_address);
       console.log(location);
 
       await db.collection("history").add({
