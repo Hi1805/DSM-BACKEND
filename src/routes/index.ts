@@ -6,7 +6,7 @@ import { teacherRouter } from "./teacher";
 
 const router = express.Router();
 router.use("/teacher", authenticateToken, teacherRouter);
-router.use("/student", studentRouter);
+router.use("/student", authenticateToken, studentRouter);
 router.use("/dsm", DSMRouter);
 
 export default router;

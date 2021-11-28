@@ -8,24 +8,19 @@ export async function authenticateToken(
 ): Promise<any> {
   try {
     const authHeader = req.headers["authorization"];
-
     if (!authHeader) {
       return res.status(401).send({
         message: "user went wrong",
       });
     }
     const token = authHeader.split("Bearer ")[1];
-    jwt.verify(
-      token,
-      process.env.ACCESS_TOKEN_SECRET || "deptraivocung",
-      (err, user) => {
-        if (err) {
-          throw new Error("user went wrong");
-        }
-        req.body.user = user;
-        next();
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET || "", (err, user) => {
+      if (err) {
+        throw new Error("user went wrong");
       }
-    );
+      req.body.user = user;
+      next();
+    });
   } catch (error) {
     return res.status(401).send({
       message: "something went wrong",

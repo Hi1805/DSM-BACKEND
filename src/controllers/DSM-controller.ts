@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
-import { toString } from "lodash";
 import { bodyRequestEmail, ClassesResponse } from "../types";
-import { auth, db } from "./../shared";
+import { db } from "./../shared";
 import { sendMail } from "../helpers/send";
 import * as jwt from "jsonwebtoken";
-// DSM Data School Managment
+import DeviceDetector from "device-detector-js";
+import geoip from "geoip-lite";
+import bscrypt from "bcrypt";
 class DSMController {
   async sendEmail(req: Request, res: Response) {
     try {
@@ -40,15 +41,35 @@ class DSMController {
   async login(req: Request, res: Response) {
     try {
       const { email, password } = req.body;
-
+      const user_agent = req.headers["user-agent"];
+      if (!email && password && user_agent) {
+        throw new Error("Info login not valid");
+      }
       const user = (
         await db
           .collection("accounts")
           .where("email", "==", email)
           .where("password", "==", password)
           .get()
-      ).docs;
-      if (!user.length) {
+      ).docs[0];
+      let ip = req.ip;
+      if (ip.substr(0, 7) == "::ffff:") {
+        ip = ip.substr(7);
+      }
+      const ip_address = ip;
+      const deviceDetector = new DeviceDetector();
+      const device = deviceDetector.parse(user_agent || "");
+      const location = geoip.lookup(ip_address);
+      await db.collection("history").add({
+        date: new Date(),
+        status: typeof user !== undefined,
+        user_ip: ip_address,
+        location: location,
+        client: device.client,
+        os: device.os,
+        device: device.device,
+      });
+      if (!user) {
         throw new Error("Email or password incorrect ");
       }
       return res.json({
@@ -57,16 +78,26 @@ class DSMController {
             email: email,
             password,
           },
-          process.env.ACCESS_TOKEN_SECRET || ""
+          process.env.ACCESS_TOKEN_SECRET || "",
+          {
+            expiresIn: "1d",
+          }
         ),
       });
     } catch (error: any) {
+      console.log(error.message);
+
       return res.status(401).send({
         message: error.message,
       });
     }
   }
-  async changePassword(req: Request, res: Response) {}
+  async changePassword(req: Request, res: Response) {
+    try {
+    } catch (error: any) {
+      console.log(error.message);
+    }
+  }
 }
 
 export default new DSMController();

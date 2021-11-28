@@ -7,7 +7,7 @@ import Router from "./routes";
 dotenv.config();
 
 const app = express();
-const options = {
+const options: swaggerJsDoc.Options = {
   definition: {
     openapi: "3.0.0",
     info: {
@@ -23,6 +23,7 @@ const options = {
         },
       },
     },
+
     servers: [
       {
         url: "https://data-school-mangement-01.herokuapp.com",
