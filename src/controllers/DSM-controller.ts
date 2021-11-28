@@ -60,6 +60,8 @@ class DSMController {
       const deviceDetector = new DeviceDetector();
       const device = deviceDetector.parse(user_agent || "");
       const location = geoip.lookup(ip_address);
+      console.log(location);
+
       await db.collection("history").add({
         date: new Date(),
         status: typeof user !== undefined,
