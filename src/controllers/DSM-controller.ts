@@ -82,17 +82,20 @@ class DSMController {
       if (!isCorrectPassword) {
         throw new Error("Password is incorrect");
       }
+      const token = jwt.sign(
+        {
+          uid: user.id,
+          ip_address: clientIp,
+        },
+        process.env.ACCESS_TOKEN_SECRET || "",
+        {
+          expiresIn: "7d",
+        }
+      );
+      console.log({ token });
+
       return res.json({
-        token: jwt.sign(
-          {
-            uid: user.id,
-            ip_address: clientIp,
-          },
-          process.env.ACCESS_TOKEN_SECRET || "",
-          {
-            expiresIn: "1d",
-          }
-        ),
+        token,
       });
     } catch (error: any) {
       console.log(error.message);
