@@ -14,6 +14,8 @@ export async function authenticateToken(
       });
     }
     const token = authHeader.split("Bearer ")[1];
+    console.log(token);
+
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET || "", (err, user) => {
       if (err) {
         throw new Error("user went wrong");
@@ -21,7 +23,9 @@ export async function authenticateToken(
       req.body.user = user;
       next();
     });
-  } catch (error) {
+  } catch (error: any) {
+    console.log(error.message);
+
     return res.status(401).send({
       message: "something went wrong",
     });
