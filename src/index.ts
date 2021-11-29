@@ -24,12 +24,6 @@ const options: swaggerJsDoc.Options = {
             bearerFormat: "JWT",
             name: "authorization",
           },
-          {
-            type: "https",
-            scheme: "bearer",
-            name: "authorization",
-            bearerFormat: "JWT",
-          },
         ],
       },
     },
