@@ -13,8 +13,8 @@ export async function authenticateToken(
         message: "user went wrong",
       });
     }
-    const token = authHeader.split("Bearer ")[1];
-    console.log(token);
+    const token = authHeader.split("Bearer")[1].replaceAll(" ", "");
+    console.log({ token });
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET || "", (err, user) => {
       if (err) {
