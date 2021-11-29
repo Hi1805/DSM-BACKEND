@@ -5,4 +5,9 @@ const DSMRouter = express.Router();
 DSMRouter.post("/login", DSMController.login);
 DSMRouter.post("/send-email", authenticateToken, DSMController.sendEmail);
 DSMRouter.get("/classes", authenticateToken, DSMController.getClasses);
+DSMRouter.post(
+  "/change-password",
+  authenticateToken,
+  DSMController.changePassword
+);
 export { DSMRouter };
