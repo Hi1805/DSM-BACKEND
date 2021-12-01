@@ -3,6 +3,7 @@ import { db } from "../shared";
 import { Request, Response } from "express";
 import { Student } from "../types";
 import { createID, isValidRequest } from "../helpers";
+import { algoliaStudent } from "./../shared/connect";
 
 class StudentController {
   async getListStudent(req: Request, res: Response) {
@@ -50,6 +51,8 @@ class StudentController {
         },
       });
     } catch (error: any) {
+      console.log(error.message);
+
       return res.status(500).send({
         message: "get list students failed",
         error: error.message,
@@ -77,7 +80,9 @@ class StudentController {
       return res.status(200).send({
         total,
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.log(error.message);
+
       return res.status(500).send({
         message: "get total student failed",
       });
@@ -107,13 +112,13 @@ class StudentController {
         const { total } = (await (
           await db.collection("classes").doc(toString(grade)).get()
         ).data()) as { total: number };
-        const id = createID("student", total, date_of_birth, Class);
+        const uid_student = createID("student", total, date_of_birth, Class);
         await db
           .collection("students")
-          .doc(id)
+          .doc(uid_student)
           .set({
             ...req.body,
-            id,
+            id: uid_student,
           });
         await db
           .collection("classes")
@@ -126,6 +131,7 @@ class StudentController {
               merge: true,
             }
           );
+
         return res.status(201).send({
           message: "Create Student successfully",
         });
@@ -134,6 +140,8 @@ class StudentController {
           message: message,
         });
     } catch (error: any) {
+      console.log(error);
+
       return res.status(500).send({
         message: error.message,
       });
@@ -151,7 +159,6 @@ class StudentController {
         grade,
         Class,
       }: Student = req.body;
-      console.log(req.body);
 
       if (!id) {
         throw new Error("ID invalid");
@@ -167,18 +174,16 @@ class StudentController {
       });
 
       if (status) {
-        const { id: studentId } = (
-          await db.collection("students").doc(id).get()
-        ).data() as Student;
         await db
           .collection("students")
-          .doc(studentId)
+          .doc(id)
           .set(
             {
               ...req.body,
             },
             { merge: true }
           );
+
         return res.status(200).send({
           message: `Edit student ${id} successfully `,
         });

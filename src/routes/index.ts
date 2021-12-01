@@ -1,12 +1,10 @@
 import * as express from "express";
 import { authenticateToken } from "../middlewares";
-import { DSMRouter } from "./dsm";
-import { studentRouter } from "./students";
-import { teacherRouter } from "./teacher";
+import privateRouter from "./private";
+import publicRouter from "./public";
 
-const router = express.Router();
-router.use("/teacher", authenticateToken, teacherRouter);
-router.use("/student", authenticateToken, studentRouter);
-router.use("/dsm", DSMRouter);
+const apiRouter = express.Router();
+apiRouter.use("/private", authenticateToken, privateRouter);
+apiRouter.use("/public", publicRouter);
 
-export default router;
+export default apiRouter;

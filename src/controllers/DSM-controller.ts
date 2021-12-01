@@ -92,8 +92,6 @@ class DSMController {
           expiresIn: "7d",
         }
       );
-      console.log({ token });
-
       return res.json({
         token,
       });

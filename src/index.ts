@@ -3,7 +3,8 @@ import dotenv from "dotenv";
 import swaggerUi from "swagger-ui-express";
 import swaggerJsDoc from "swagger-jsdoc";
 import cors from "cors";
-import Router from "./routes";
+import ApiRouter from "./routes";
+// import algoliasearch from "algoliasearch";
 dotenv.config();
 
 const app = express();
@@ -44,9 +45,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
-app.use("/api", Router);
+app.use("/api", ApiRouter);
 const port = process.env.PORT || "4000";
-console.log("LOADING.................");
 
 app.listen(port, () => {
   console.log(`server listen port http://localhost:${port}/api`);

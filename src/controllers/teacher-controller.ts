@@ -143,15 +143,18 @@ class TeacherController {
       if (!id) {
         throw new Error("ID invalid");
       }
-      const { status, message } = await isValidRequest({
-        first_name,
-        last_name,
-        gender,
-        date_of_birth,
-        email,
-        grade: toNumber(grade),
-        Class: toString(Class),
-      });
+      const { status, message } = await isValidRequest(
+        {
+          first_name,
+          last_name,
+          gender,
+          date_of_birth,
+          email,
+          grade: toNumber(grade),
+          Class: toString(Class),
+        },
+        "teacher"
+      );
 
       if (status) {
         const { id: uid } = (
