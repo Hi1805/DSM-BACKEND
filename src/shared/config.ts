@@ -1,7 +1,6 @@
 import * as dotenv from "dotenv";
-import { toString } from "lodash";
 dotenv.config();
-const private_key = toString(process.env.PRIVATE_KEY).replace(/\\n/g, "\n");
+const private_key = `-----BEGIN PRIVATE KEY-----\n${process.env.PRIVATE_KEY}\n-----END PRIVATE KEY-----\n`;
 
 export const firebaseConfig = {
   type: "service_account",
