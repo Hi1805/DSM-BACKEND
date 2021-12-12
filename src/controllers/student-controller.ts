@@ -3,9 +3,9 @@ import { db } from "../shared";
 import { Request, Response } from "express";
 import { Student } from "../types";
 import { createID, isValidRequest } from "../helpers";
-import { algoliaStudent } from "./../shared/connect";
 
 class StudentController {
+  //
   async getListStudent(req: Request, res: Response) {
     try {
       const { page, size, isSort } = req.query;
@@ -13,19 +13,19 @@ class StudentController {
       if (!page || !size) {
         return res.send(200).send([]);
       }
-
-      const offset = toNumber(size) * toNumber(page) - toNumber(size);
+      const offset = (toNumber(page) - 1) * toNumber(size);
       if (toNumber(size) <= 0 || toNumber(page) <= 0) {
-        return res.status(200).send([]);
+        return res.send(200).send([]);
       }
+
       const total = await (await db.collection("students").get()).size;
+
       let students: Student[] = [];
       if (isSort === "true") {
         students = (
           await db
             .collection("students")
             .orderBy("last_name")
-            // .orderBy("first_name")
             .limit(toNumber(size))
             .offset(offset)
             .get()
@@ -35,7 +35,6 @@ class StudentController {
           await db
             .collection("students")
             .orderBy("last_name", "desc")
-            // .orderBy("first_name")
             .limit(toNumber(size))
             .offset(offset)
             .get()

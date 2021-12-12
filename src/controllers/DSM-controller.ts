@@ -1,14 +1,15 @@
+import bcrypt from "bcrypt";
+import DeviceDetector from "device-detector-js";
 import { Request, Response } from "express";
+import * as generate from "generate-password";
+import geoip from "geoip-lite";
+import * as jwt from "jsonwebtoken";
+import { toNumber, toString } from "lodash";
+import { totp } from "otplib";
+import * as requestIp from "request-ip";
+import { sendMail } from "../helpers/send";
 import { bodyRequestEmail, ClassesResponse } from "../types";
 import { db } from "./../shared";
-import { sendMail } from "../helpers/send";
-import * as jwt from "jsonwebtoken";
-import DeviceDetector from "device-detector-js";
-import geoip from "geoip-lite";
-import * as requestIp from "request-ip";
-import bcrypt from "bcrypt";
-import { rest, toString } from "lodash";
-
 class DSMController {
   async sendEmail(req: Request, res: Response) {
     try {
@@ -30,7 +31,7 @@ class DSMController {
     try {
       const grades: ClassesResponse[] = (
         await db.collection("classes").get()
-      ).docs.map((doc) => {
+      ).docs.map((doc: any) => {
         const data = { ...doc.data() };
         return { ...data, ...{ total: undefined } } as ClassesResponse;
       });
@@ -74,6 +75,8 @@ class DSMController {
       if (!user) {
         throw new Error("Email or username is incorrect ");
       }
+      // system password
+
       const { password: sysPassword } = user.data() as { password: string };
       const isCorrectPassword = await bcrypt.compare(
         toString(password),
@@ -137,6 +140,142 @@ class DSMController {
       console.log(error.message);
       return res.status(500).json({
         message: error.message,
+      });
+    }
+  }
+
+  async getListHistory(req: Request, res: Response) {
+    try {
+      const { page, size, date } = req.query;
+      //offset : value start
+      if (!page || !size) {
+        return res.send(500).send({
+          message: "page and size is required",
+        });
+      }
+      const offset = toNumber(size) * toNumber(page) - toNumber(size);
+      if (toNumber(size) <= 0 || toNumber(page) <= 0) {
+        return res.status(200).send([]);
+      }
+      const total = await (await db.collection("history").get()).size;
+
+      const histories = (
+        await db
+          .collection("history")
+          .orderBy("date", "desc")
+          .where("date", "==", date)
+          .limit(toNumber(size))
+          .offset(offset)
+          .get()
+      ).docs.map((doc: any) => doc.data());
+      return res.status(200).send({
+        list: histories,
+        total,
+        pagination: {
+          page,
+          size,
+        },
+      });
+    } catch (error: any) {
+      console.log(error);
+      return res.status(500).send({
+        message: error.message,
+      });
+    }
+  }
+
+  async forgotPassword(req: Request, res: Response) {
+    try {
+      const { email } = req.body;
+
+      const user = (
+        await db.collection("accounts").where("email", "==", email).get()
+      ).docs[0];
+      if (!user) {
+        throw new Error("Email is not exist");
+      }
+      totp.options = {
+        step: 60 * 5, // 15 minutes
+      };
+      const otp = totp.generate(process.env.ACCESS_TOKEN_SECRET || "");
+      const token = jwt.sign(
+        {
+          uid: user.id,
+          email,
+          otp,
+        },
+        process.env.ACCESS_TOKEN_SECRET || "",
+        {
+          expiresIn: "5m",
+        }
+      );
+
+      const message = await sendMail(
+        email,
+        "Your OTP for School Data Management",
+        `
+        <h2>Your OTP for School Data Management</h2>
+        <h4>Your OTP is: <strong style="font-size:1rem">${otp}</strong></h4>
+        <h4>Please use this OTP to reset your password</h4>
+        <h4>This OTP will expire in 5 minutes</h4>
+        <h4>If you did not request this, please ignore this email</h4>
+        <h4>Thank you, OFA Team</h4>
+        <a href="https://https://dsm-frontend-01.vercel.app/">Website: School Data Management</a>
+      `
+      );
+      return res.status(200).send({
+        message,
+        token,
+      });
+    } catch (error: any) {
+      console.log(error);
+      return res.status(500).send({
+        message: error.message,
+      });
+    }
+  }
+
+  async checkingOtp(req: Request, res: Response) {
+    try {
+      const { otp } = req.body;
+      const { uid, email } = req.body.user;
+      const isSafeOtp = totp.check(otp, process.env.ACCESS_TOKEN_SECRET || "");
+      if (!isSafeOtp) {
+        throw new Error("OTP is not valid");
+      }
+      const newPassword = generate.generate({
+        length: 10,
+        uppercase: true,
+        lowercase: true,
+        numbers: true,
+      });
+
+      const encode_password = await bcrypt.hash(newPassword, 10);
+
+      await db.collection("accounts").doc(uid).set(
+        {
+          password: encode_password,
+        },
+        { merge: true }
+      );
+      await sendMail(
+        email,
+        "Your New Password For School Data Management",
+        `
+        <h2>Your New Password For School Data Management</h2>
+        <h4>Your new password is: <strong style="font-size:1rem">${newPassword}</strong></h4>
+        <h4>Please use this password to login</h4>
+        <h4>Please You can change your new password to be more secure</h4>
+        <h4>Thank you, OFA Team</h4>
+        <a href="https://https://dsm-frontend-01.vercel.app/">Website: School Data Management</a>
+      `
+      );
+      return res.status(200).send({
+        message: "OTP is confirmed",
+      });
+    } catch (error) {
+      return res.status(500).send({
+        message: "OTP is not valid",
       });
     }
   }
