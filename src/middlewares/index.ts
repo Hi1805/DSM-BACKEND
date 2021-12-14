@@ -19,7 +19,10 @@ export async function authenticateToken(
       if (err) {
         throw new Error("user went wrong");
       }
-      req.body.user = user;
+      req.body.user = {
+        ...user,
+        token: token,
+      };
       next();
     });
   } catch (error: any) {

@@ -10,14 +10,10 @@ class StudentController {
     try {
       const { page, size, isSort } = req.query;
       //offset : value start
-      if (!page || !size) {
-        return res.send(200).send([]);
-      }
-      const offset = (toNumber(page) - 1) * toNumber(size);
-      if (toNumber(size) <= 0 || toNumber(page) <= 0) {
-        return res.send(200).send([]);
-      }
 
+      console.log(page, size);
+
+      const offset = (toNumber(page) - 1) * toNumber(size);
       const total = await (await db.collection("students").get()).size;
 
       let students: Student[] = [];
@@ -98,6 +94,7 @@ class StudentController {
         last_name,
         email,
       }: Student = req.body;
+
       const { status, message } = await isValidRequest({
         first_name,
         last_name,
@@ -140,7 +137,6 @@ class StudentController {
         });
     } catch (error: any) {
       console.log(error);
-
       return res.status(500).send({
         message: error.message,
       });

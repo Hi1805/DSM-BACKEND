@@ -1,8 +1,8 @@
 export interface bodyRequestEmail {
-  email: string;
+  type_send: "teachers" | "students";
   subject: string;
   content: string;
-  files: string[];
+  files: Array<File>;
 }
 export interface Teacher {
   id: string;
@@ -30,6 +30,11 @@ export interface ClassesResponse {
   grade: number;
   values: string[];
   total: number | undefined;
+}
+export interface File {
+  filename: string;
+  content: string;
+  encoding: "base64";
 }
 export interface CommonError {
   message?: string;

@@ -1,10 +1,11 @@
 import * as nodemailer from "nodemailer";
+import { File } from "../types";
 const { google } = require("googleapis");
 export const sendMail = async (
   email: string,
   subject: string,
   content: string,
-  files?: string[]
+  files?: File[]
 ) => {
   try {
     const oAuth2Client = new google.auth.OAuth2(
@@ -37,6 +38,7 @@ export const sendMail = async (
         to: email, // list of receivers
         subject: subject, // Subject line
         html: `<div">${content}</div>`, // html body
+        attachments: files,
       })
       .then(() => {
         return `Sent email ${email} successfully`;

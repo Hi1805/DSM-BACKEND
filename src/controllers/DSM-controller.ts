@@ -8,16 +8,21 @@ import { toNumber, toString } from "lodash";
 import { totp } from "otplib";
 import * as requestIp from "request-ip";
 import { sendMail } from "../helpers/send";
-import { bodyRequestEmail, ClassesResponse } from "../types";
+import { bodyRequestEmail, ClassesResponse, Student } from "../types";
 import { db } from "./../shared";
 class DSMController {
   async sendEmail(req: Request, res: Response) {
     try {
-      const { email, subject, content, files }: bodyRequestEmail = req.body;
-      const message = await sendMail(email, subject, content, files);
+      const { type_send, subject, content, files }: bodyRequestEmail = req.body;
+      const data = (await db.collection(type_send).get()).docs.map(
+        (doc: any) => doc.data() as Student
+      );
+      for (const doc of data) {
+        await sendMail(doc.email, subject, content, files);
+      }
       // send mail with defined transport object
       return res.status(200).send({
-        message: message,
+        message: "send mail successfully",
       });
     } catch (error) {
       return res.status(500).send({
@@ -194,22 +199,21 @@ class DSMController {
       if (!user) {
         throw new Error("Email is not exist");
       }
-      totp.options = {
-        step: 60 * 5, // 15 minutes
-      };
-      const otp = totp.generate(process.env.ACCESS_TOKEN_SECRET || "");
+
       const token = jwt.sign(
         {
           uid: user.id,
           email,
-          otp,
         },
         process.env.ACCESS_TOKEN_SECRET || "",
         {
           expiresIn: "5m",
         }
       );
-
+      totp.options = {
+        step: 60 * 5, // 5 minutes
+      };
+      const otp = totp.generate(token);
       const message = await sendMail(
         email,
         "Your OTP for School Data Management",
@@ -238,8 +242,10 @@ class DSMController {
   async checkingOtp(req: Request, res: Response) {
     try {
       const { otp } = req.body;
-      const { uid, email } = req.body.user;
-      const isSafeOtp = totp.check(otp, process.env.ACCESS_TOKEN_SECRET || "");
+      const { uid, email, token } = req.body.user;
+      console.log(token);
+
+      const isSafeOtp = totp.check(otp, token || "");
       if (!isSafeOtp) {
         throw new Error("OTP is not valid");
       }
