@@ -224,7 +224,7 @@ class DSMController {
         <h4>This OTP will expire in 5 minutes</h4>
         <h4>If you did not request this, please ignore this email</h4>
         <h4>Thank you, OFA Team</h4>
-        <a href="https://https://dsm-frontend-01.vercel.app/">Website: School Data Management</a>
+        <a href="https://data-school-management.vercel.app/forgot-password">Website: School Data Management</a>
       `
       );
       return res.status(200).send({
@@ -273,7 +273,7 @@ class DSMController {
         <h4>Please use this password to login</h4>
         <h4>Please You can change your new password to be more secure</h4>
         <h4>Thank you, OFA Team</h4>
-        <a href="https://https://dsm-frontend-01.vercel.app/">Website: School Data Management</a>
+        <a href="https://data-school-management.vercel.app/login">Website: School Data Management</a>
       `
       );
       return res.status(200).send({

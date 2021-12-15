@@ -8,33 +8,61 @@ class StudentController {
   //
   async getListStudent(req: Request, res: Response) {
     try {
-      const { page, size, isSort } = req.query;
+      const { page, size, isSort, searchValue } = req.query;
       //offset : value start
-
-      console.log(page, size);
 
       const offset = (toNumber(page) - 1) * toNumber(size);
       const total = await (await db.collection("students").get()).size;
 
       let students: Student[] = [];
-      if (isSort === "true") {
-        students = (
-          await db
-            .collection("students")
-            .orderBy("last_name")
-            .limit(toNumber(size))
-            .offset(offset)
-            .get()
-        ).docs.map((doc) => doc.data() as Student);
-      } else {
-        students = (
-          await db
-            .collection("students")
-            .orderBy("last_name", "desc")
-            .limit(toNumber(size))
-            .offset(offset)
-            .get()
-        ).docs.map((doc) => doc.data() as Student);
+
+      switch (isSort) {
+        case "true":
+          if (toString(searchValue).trim()) {
+            students = (
+              await db
+                .collection("students")
+                .limit(toNumber(size))
+                .where("last_name", ">=", toString(searchValue).trim())
+                .where("last_name", "<=", toString(searchValue).trim())
+                .orderBy("last_name", "asc")
+                .offset(offset)
+                .get()
+            ).docs.map((doc) => doc.data() as Student);
+          } else {
+            students = (
+              await db
+                .collection("students")
+                .limit(toNumber(size))
+                .orderBy("last_name", "asc")
+                .offset(offset)
+                .get()
+            ).docs.map((doc) => doc.data() as Student);
+          }
+          break;
+        default:
+          if (toString(searchValue).trim()) {
+            students = (
+              await db
+                .collection("students")
+                .limit(toNumber(size))
+                .where("last_name", ">=", toString(searchValue).trim())
+                .where("last_name", "<=", toString(searchValue).trim())
+                .orderBy("last_name", "desc")
+                .offset(offset)
+                .get()
+            ).docs.map((doc) => doc.data() as Student);
+          } else {
+            students = (
+              await db
+                .collection("students")
+                .orderBy("last_name", "desc")
+                .limit(toNumber(size))
+                .offset(offset)
+                .get()
+            ).docs.map((doc) => doc.data() as Student);
+          }
+          break;
       }
 
       return res.status(200).send({

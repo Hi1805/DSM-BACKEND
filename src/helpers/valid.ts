@@ -9,6 +9,9 @@ function validateEmail(email: string) {
 }
 
 function validateName(name: string) {
+  if (!name.trim()) {
+    return false;
+  }
   const regexOnlyLetter =
     /^[ a-zA-Z_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]+$/;
   return regexOnlyLetter.test(name.toLowerCase());

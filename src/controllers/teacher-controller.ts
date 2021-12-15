@@ -7,7 +7,8 @@ import { createID, isValidRequest } from "../helpers";
 class TeacherController {
   async getListTeacher(req: Request, res: Response) {
     try {
-      const { page, size, isSort } = req.query;
+      const { page, size, isSort, searchValue } = req.query;
+      console.log(searchValue);
 
       if (!page || !size) {
         return res.send(200).send([]);
@@ -18,26 +19,53 @@ class TeacherController {
       }
       const total = await (await db.collection("teachers").get()).size;
       let teachers: Teacher[] = [];
-      if (isSort === "true") {
-        teachers = (
-          await db
-            .collection("teachers")
-            .orderBy("last_name")
-            // .orderBy("first_name")
-            .limit(toNumber(size))
-            .offset(offset)
-            .get()
-        ).docs.map((doc) => doc.data() as Teacher);
-      } else {
-        teachers = (
-          await db
-            .collection("teachers")
-            .orderBy("last_name", "desc")
-            // .orderBy("first_name")
-            .limit(toNumber(size))
-            .offset(offset)
-            .get()
-        ).docs.map((doc) => doc.data() as Teacher);
+      switch (isSort) {
+        case "true":
+          if (toString(searchValue).trim()) {
+            teachers = (
+              await db
+                .collection("teachers")
+                .limit(toNumber(size))
+                .where("last_name", ">=", toString(searchValue).trim())
+                .where("last_name", "<=", toString(searchValue).trim())
+                .orderBy("last_name", "asc")
+                .offset(offset)
+                .get()
+            ).docs.map((doc) => doc.data() as Teacher);
+          } else {
+            teachers = (
+              await db
+                .collection("teachers")
+                .limit(toNumber(size))
+                .orderBy("last_name", "asc")
+                .offset(offset)
+                .get()
+            ).docs.map((doc) => doc.data() as Teacher);
+          }
+          break;
+        default:
+          if (toString(searchValue).trim()) {
+            teachers = (
+              await db
+                .collection("teachers")
+                .limit(toNumber(size))
+                .where("last_name", ">=", toString(searchValue).trim())
+                .where("last_name", "<=", toString(searchValue).trim())
+                .orderBy("last_name", "desc")
+                .offset(offset)
+                .get()
+            ).docs.map((doc) => doc.data() as Teacher);
+          } else {
+            teachers = (
+              await db
+                .collection("teachers")
+                .orderBy("last_name", "desc")
+                .limit(toNumber(size))
+                .offset(offset)
+                .get()
+            ).docs.map((doc) => doc.data() as Teacher);
+          }
+          break;
       }
 
       return res.status(200).send({
