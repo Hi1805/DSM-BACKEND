@@ -5,6 +5,7 @@ import * as generate from "generate-password";
 import geoip from "geoip-lite";
 import * as jwt from "jsonwebtoken";
 import { toNumber, toString } from "lodash";
+import moment from "moment";
 import { totp } from "otplib";
 import * as requestIp from "request-ip";
 import { sendMail } from "../helpers/send";
@@ -70,12 +71,13 @@ class DSMController {
 
       await db.collection("history").add({
         date: new Date(),
-        status: typeof user !== undefined,
+        status: user !== undefined,
         user_ip: clientIp,
         location: location,
         client: device.client,
         os: device.os,
         device: device.device,
+        email,
       });
       if (!user) {
         throw new Error("Email or username is incorrect ");
@@ -97,7 +99,7 @@ class DSMController {
         },
         process.env.ACCESS_TOKEN_SECRET || "",
         {
-          expiresIn: "7d",
+          expiresIn: "1d",
         }
       );
       return res.json({
@@ -151,40 +153,31 @@ class DSMController {
 
   async getListHistory(req: Request, res: Response) {
     try {
-      const { page, size, date } = req.query;
-      //offset : value start
-      if (!page || !size) {
-        return res.send(500).send({
-          message: "page and size is required",
-        });
-      }
-      const offset = toNumber(size) * toNumber(page) - toNumber(size);
-      if (toNumber(size) <= 0 || toNumber(page) <= 0) {
-        return res.status(200).send([]);
-      }
-      const total = await (await db.collection("history").get()).size;
-
+      const { date } = req.query;
+      const TODAY_START = date
+        ? new Date(toString(date)).setHours(0, 0, 0, 0)
+        : new Date().setHours(0, 0, 0, 0);
+      const TODAY_END = date
+        ? new Date(toString(date)).setHours(23, 59, 59, 999)
+        : new Date().setHours(23, 59, 59, 999);
       const histories = (
         await db
           .collection("history")
-          .orderBy("date", "desc")
-          .where("date", "==", date)
-          .limit(toNumber(size))
-          .offset(offset)
+          .where("date", ">", new Date(TODAY_START))
+          .where("date", "<", new Date(TODAY_END))
           .get()
-      ).docs.map((doc: any) => doc.data());
-      return res.status(200).send({
-        list: histories,
-        total,
-        pagination: {
-          page,
-          size,
-        },
-      });
+      ).docs.map((doc: any) => ({
+        ...doc.data(),
+        id: doc.id,
+        date: new Date(doc.data().date._seconds * 1000).toISOString(),
+      }));
+
+      return res.status(200).send(histories);
     } catch (error: any) {
       console.log(error);
       return res.status(500).send({
         message: error.message,
+        histories: [],
       });
     }
   }
