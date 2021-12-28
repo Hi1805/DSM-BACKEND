@@ -71,7 +71,7 @@ class DSMController {
 
       await db.collection("history").add({
         date: new Date(),
-        status: user !== undefined,
+        status: user.data() !== null,
         user_ip: clientIp,
         location: location,
         client: device.client,

@@ -186,6 +186,7 @@ class StudentController {
       if (!id) {
         throw new Error("ID invalid");
       }
+
       const { status, message } = await isValidRequest({
         first_name,
         last_name,
